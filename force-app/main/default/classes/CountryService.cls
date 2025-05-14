@@ -1,6 +1,4 @@
 public with sharing class CountryService {
-    HttpRequest req;
-
     private class Country {
         public String name;
         public String alpha2Code;
@@ -17,19 +15,8 @@ public with sharing class CountryService {
     public class ResponseException extends Exception {
     }
 
-    public CountryService() {
-        CountryLayerEndpoint__c endpointParams = CountryLayerEndpoint__c.getInstance();
-
-        req = new HttpRequest();
-        req.setEndpoint(
-            endpointParams.URL__c +
-                'all?access_key=' +
-                endpointParams.Access_Key__c
-        );
-        req.setMethod('GET');
-    }
-
-    public void updateCountries() {
+    @future(callout=true)
+    public static void updateCountries() {
         List<Country> countries = sendRequest();
 
         Map<String, Country> newCountriesMap = convertCountriesToMap(countries);
@@ -47,10 +34,18 @@ public with sharing class CountryService {
         }
     }
 
-    private List<Country> sendRequest() {
+    private static List<Country> sendRequest() {
         Http http = new Http();
-        HttpResponse res = http.send(req);
+        CountryLayerEndpoint__c endpointParams = CountryLayerEndpoint__c.getInstance();
 
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint(
+            endpointParams.URL__c +
+                'all?access_key=' +
+                endpointParams.Access_Key__c
+        );
+        req.setMethod('GET');
+        HttpResponse res = http.send(req);
         if (res.getStatusCode() != 200) {
             throw new ResponseException(res.getBody());
         }
@@ -61,7 +56,7 @@ public with sharing class CountryService {
         );
     }
 
-    private Map<String, Country> convertCountriesToMap(
+    private static Map<String, Country> convertCountriesToMap(
         List<Country> countries
     ) {
         Map<String, Country> countryMap = new Map<String, Country>();
@@ -73,7 +68,7 @@ public with sharing class CountryService {
         return countryMap;
     }
 
-    private Map<String, Country__c> getExistingCountries(
+    private static Map<String, Country__c> getExistingCountries(
         Set<String> newCountryCodes
     ) {
         Map<String, Country__c> existingCountries = new Map<String, Country__c>();
@@ -95,7 +90,7 @@ public with sharing class CountryService {
         return existingCountries;
     }
 
-    private List<Country__c> compareCountries(
+    private static List<Country__c> compareCountries(
         Map<String, Country> newCountriesMap,
         Map<String, Country__c> oldCountriesMap
     ) {
@@ -143,7 +138,9 @@ public with sharing class CountryService {
         return countriesToUpsert;
     }
 
-    private String concatenateRegionalBlocks(List<RegionalBloc> regionalBlocs) {
+    private static String concatenateRegionalBlocks(
+        List<RegionalBloc> regionalBlocs
+    ) {
         if (regionalBlocs == null || regionalBlocs.isEmpty()) {
             return null;
         }

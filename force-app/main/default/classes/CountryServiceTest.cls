@@ -1,6 +1,6 @@
 @isTest
-private class CountryServiceTest {
-    private class MockHttpResponseGenerator implements HttpCalloutMock {
+public class CountryServiceTest {
+    public class MockHttpResponseGenerator implements HttpCalloutMock {
         public HTTPResponse respond(HTTPRequest req) {
             HttpResponse res = new HttpResponse();
             res.setStatusCode(200);
@@ -25,7 +25,7 @@ private class CountryServiceTest {
     static void testUpdateCountries_Insert() {
         Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator());
         Test.startTest();
-        new CountryService().updateCountries();
+        CountryService.updateCountries();
         Test.stopTest();
 
         List<Country__c> countries = [SELECT Name, Alpha_2_Code__c, Alpha_3_Code__c, Capital__c, Region__c, Regional_Blocks__c FROM Country__c ORDER BY Alpha_2_Code__c];
@@ -47,7 +47,7 @@ private class CountryServiceTest {
         );
         Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator());
         Test.startTest();
-        new CountryService().updateCountries();
+        CountryService.updateCountries();
         Test.stopTest();
 
         Country__c updated = [SELECT Name, Alpha_3_Code__c, Capital__c, Region__c, Regional_Blocks__c FROM Country__c WHERE Alpha_2_Code__c = 'AA' LIMIT 1];
@@ -63,7 +63,9 @@ private class CountryServiceTest {
         Test.setMock(HttpCalloutMock.class, new MockHttpErrorResponseGenerator());
         Boolean exceptionThrown = false;
         try {
-            new CountryService().updateCountries();
+            Test.startTest();
+            CountryService.updateCountries();
+            Test.stopTest();
         } catch (CountryService.ResponseException ex) {
             exceptionThrown = true;
         }
