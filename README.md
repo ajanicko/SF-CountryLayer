@@ -1,18 +1,13 @@
-# Salesforce DX Project: Next Steps
-
-Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
-
-## How Do You Plan to Deploy Your Changes?
-
-Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
-
-## Configure Your Salesforce DX Project
-
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
-
-## Read All About It
-
-- [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
-- [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+Salesforce coding excercise
+1. With API from https://countrylayer.com/ upload information to Salesforce about countries specifically we
+are interested in Name, Country alpha2code and alpha3code, Capital city, region, regionalBlocs (acronyms
+are sufficient).
+Once a day, check if any of the information on the API has been changed and if so, update it in Salesforce.
+Then create a trigger that will show the information on the leads based on their countries. Create tests for
+the feature to be ready for deployment.
+2. Additionally create validation rule for leads that do not allow to change owner unless Country, Lead
+Source and No. of Employees are filled in.
+This applies for all profiles except of System Administrator and Contract Manager profiles do not need to
+fill in the No. of Employees and System Administrator profile also does not need to fill in Country.
+3. Also, create a flow that will track assignments of Lead Owner. Meaning when Lead Owner is assigned
+then save timestamp to the field Owner Since.
