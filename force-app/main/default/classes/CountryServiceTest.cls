@@ -24,11 +24,22 @@ public class CountryServiceTest {
     @IsTest
     static void testUpdateCountries_Insert() {
         Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator());
+
         Test.startTest();
         CountryService.updateCountries();
         Test.stopTest();
 
-        List<Country__c> countries = [SELECT Name, Alpha_2_Code__c, Alpha_3_Code__c, Capital__c, Region__c, Regional_Blocks__c FROM Country__c ORDER BY Alpha_2_Code__c];
+        List<Country__c> countries = [
+            SELECT
+                Name,
+                Alpha_2_Code__c,
+                Alpha_3_Code__c,
+                Capital__c,
+                Region__c,
+                Regional_Blocks__c
+            FROM Country__c
+            ORDER BY Alpha_2_Code__c
+        ];
         System.assertEquals(2, countries.size());
         System.assertEquals('CountryA', countries[0].Name);
         System.assertEquals('CountryB', countries[1].Name);
@@ -36,7 +47,7 @@ public class CountryServiceTest {
 
     @IsTest
     static void testUpdateCountries_Update() {
-        // Insert an existing country with different values
+        Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator());
         insert new Country__c(
             Name = 'CountryA',
             Alpha_2_Code__c = 'AA',
@@ -45,12 +56,22 @@ public class CountryServiceTest {
             Region__c = 'RegionA',
             Regional_Blocks__c = 'TEST1, TEST2'
         );
-        Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator());
+
         Test.startTest();
         CountryService.updateCountries();
         Test.stopTest();
 
-        Country__c updated = [SELECT Name, Alpha_3_Code__c, Capital__c, Region__c, Regional_Blocks__c FROM Country__c WHERE Alpha_2_Code__c = 'AA' LIMIT 1];
+        Country__c updated = [
+            SELECT
+                Name,
+                Alpha_3_Code__c,
+                Capital__c,
+                Region__c,
+                Regional_Blocks__c
+            FROM Country__c
+            WHERE Alpha_2_Code__c = 'AA'
+            LIMIT 1
+        ];
         System.assertEquals('CountryA', updated.Name);
         System.assertEquals('AAA', updated.Alpha_3_Code__c);
         System.assertEquals('CapitalA', updated.Capital__c);
@@ -60,8 +81,12 @@ public class CountryServiceTest {
 
     @IsTest
     static void testUpdateCountries_HttpError() {
-        Test.setMock(HttpCalloutMock.class, new MockHttpErrorResponseGenerator());
+        Test.setMock(
+            HttpCalloutMock.class,
+            new MockHttpErrorResponseGenerator()
+        );
         Boolean exceptionThrown = false;
+
         try {
             Test.startTest();
             CountryService.updateCountries();
@@ -69,6 +94,10 @@ public class CountryServiceTest {
         } catch (CountryService.ResponseException ex) {
             exceptionThrown = true;
         }
-        System.assert(exceptionThrown, 'Exception should be thrown on HTTP error');
+
+        System.assert(
+            exceptionThrown,
+            'Exception should be thrown on HTTP error'
+        );
     }
 }

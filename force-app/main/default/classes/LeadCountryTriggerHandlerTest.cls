@@ -31,7 +31,6 @@ public class LeadCountryTriggerHandlerTest {
             FROM Lead
             WHERE Id = :lead.Id
         ];
-
         System.assertEquals(
             usa.Id,
             insertedLead.Country__c,
@@ -56,7 +55,6 @@ public class LeadCountryTriggerHandlerTest {
         Test.stopTest();
 
         Lead insertedLead = [SELECT Country__c FROM Lead WHERE Id = :lead.Id];
-
         System.assertEquals(
             null,
             insertedLead.Country__c,
@@ -90,7 +88,6 @@ public class LeadCountryTriggerHandlerTest {
             FROM Lead
             WHERE Id = :lead.Id
         ];
-
         System.assertEquals(
             usa.Id,
             updatedLead.Country__c,
