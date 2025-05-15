@@ -1,5 +1,5 @@
 @isTest
-public class LeadTriggerHandlerTest {
+public class LeadCountryTriggerHandlerTest {
     @testSetup
     static void setupData() {
         insert new List<Country__c>{
