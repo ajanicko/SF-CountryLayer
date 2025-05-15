@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Owner_Change</fullName>
+    <active>true</active>
+    <description>Do not allow to change owner unless Country, Lead Source and No. of Employees are filled in. System Administrator and Contract Manager profiles do not need to fill in the No. of Employees and System Administrator also does not need to fill in Country.</description>
+    <errorConditionFormula>ISCHANGED(OwnerId) &amp;&amp;
+(
+    ISBLANK(TEXT(LeadSource)) ||
+    (
+        NOT($Profile.Name = &quot;System Administrator&quot; || $Profile.Name = &quot;Contract Manager&quot;) &amp;&amp;
+        ISBLANK(NumberOfEmployees)
+    ) ||
+    (
+        $Profile.Name &lt;&gt; &quot;System Administrator&quot; &amp;&amp;
+        ISBLANK(Country__c)
+    )
+)</errorConditionFormula>
+    <errorMessage>Please fill in Country, Lead Source and Number of Employees fields.</errorMessage>
+</ValidationRule>
