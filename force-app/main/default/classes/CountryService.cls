@@ -1,4 +1,4 @@
-public with sharing class CountryService {
+public without sharing class CountryService {
     private class Country {
         public String name;
         public String alpha2Code;
