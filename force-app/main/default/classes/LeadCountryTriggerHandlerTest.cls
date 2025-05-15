@@ -63,6 +63,21 @@ public class LeadCountryTriggerHandlerTest {
     }
 
     @isTest
+    static void testLeadInsert_NoCountry() {
+        Test.startTest();
+        Lead lead = new Lead(LastName = 'Test', Company = 'TestCo');
+        insert lead;
+        Test.stopTest();
+
+        Lead insertedLead = [SELECT Country__c FROM Lead WHERE Id = :lead.Id];
+        System.assertEquals(
+            null,
+            insertedLead.Country__c,
+            'Country__c should not be set for missing country'
+        );
+    }
+
+    @isTest
     static void testLeadUpdate_ChangeCountryName() {
         Country__c usa = [
             SELECT Id

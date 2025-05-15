@@ -21,13 +21,17 @@ public without sharing class LeadCountryTriggerHandler {
     }
 
     public void beforeInsert(SObject[] newRecords) {
-        if (!this.isHandlerEnabled) return;
+        if (!this.isHandlerEnabled) {
+            return;
+        }
 
         updateCountry((List<Lead>) newRecords);
     }
 
     public void beforeUpdate(SObject[] newRecords, SObject[] oldRecords) {
-        if (!this.isHandlerEnabled) return;
+        if (!this.isHandlerEnabled) {
+            return;
+        }
 
         List<Lead> leadsToUpdate = new List<Lead>();
         for (Integer i = 0; i < newRecords.size(); i++) {
@@ -43,33 +47,54 @@ public without sharing class LeadCountryTriggerHandler {
     }
 
     private void updateCountry(List<Lead> leads) {
+        Set<String> countryNames = extractCountryNames(leads);
+        if (countryNames.isEmpty()) {
+            return;
+        }
+
+        Map<String, Country__c> countryMap = fetchCountryMap(countryNames);
+
+        updateLeadsWithCountry(leads, countryMap);
+    }
+
+    private Set<String> extractCountryNames(List<Lead> leads) {
         Set<String> countryNames = new Set<String>();
+
         for (Lead lead : leads) {
             if (lead.Country_Name__c != null) {
                 countryNames.add(lead.Country_Name__c.trim());
             }
         }
 
-        if (!countryNames.isEmpty()) {
-            List<Country__c> countries = [
-                SELECT Name
-                FROM Country__c
-                WHERE Name IN :countryNames
-            ];
+        return countryNames;
+    }
 
-            Map<String, Country__c> countryMap = new Map<String, Country__c>();
-            for (Country__c country : countries) {
-                countryMap.put(country.Name.toLowerCase(), country);
-            }
+    private Map<String, Country__c> fetchCountryMap(Set<String> countryNames) {
+        List<Country__c> countries = [
+            SELECT Name
+            FROM Country__c
+            WHERE Name IN :countryNames
+        ];
+        Map<String, Country__c> countryMap = new Map<String, Country__c>();
 
-            for (Lead lead : leads) {
-                if (lead.Country_Name__c != null) {
-                    String countryName = lead.Country_Name__c.toLowerCase();
-                    if (countryMap.containsKey(countryName)) {
-                        Country__c country = countryMap.get(countryName);
-                        lead.Country__c = country.Id;
-                        lead.Country_Name__c = country.Name;
-                    }
+        for (Country__c country : countries) {
+            countryMap.put(country.Name.toLowerCase(), country);
+        }
+
+        return countryMap;
+    }
+
+    private void updateLeadsWithCountry(
+        List<Lead> leads,
+        Map<String, Country__c> countryMap
+    ) {
+        for (Lead lead : leads) {
+            if (lead.Country_Name__c != null) {
+                String countryName = lead.Country_Name__c.toLowerCase();
+                if (countryMap.containsKey(countryName)) {
+                    Country__c country = countryMap.get(countryName);
+                    lead.Country__c = country.Id;
+                    lead.Country_Name__c = country.Name;
                 }
             }
         }
